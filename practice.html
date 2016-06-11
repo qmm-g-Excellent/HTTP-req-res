@@ -1,0 +1,99 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Demo</title>
+    <style>
+        body, input, select, button, h1 {
+            font-size: 28px;
+            line-height: 1.7;
+        }
+    </style>
+</head>
+
+<body>
+
+<h1>员工查询</h1>
+
+<label>请输入员工编号：</label>
+<input type="text" id="keyword"/>
+<button id="search">查询</button>
+<p id="searchResult"></p>
+
+<h1>员工新建</h1>
+<label>请输入员工姓名：</label><input type="text" id="staffName"/><br>
+<label>请输入员工编号：</label><input type="text" id="staffNumber"/><br>
+<label>请选择员工性别：</label>
+<select id="staffSex">
+    <option>女</option>
+    <option>男</option>
+</select><br>
+<label>请输入员工职位：</label><input type="text" id="staffJob"/><br>
+<button id="save">保存</button>
+<p id="createResult"></p>
+
+<script src="http://apps.bdimg.com/libs/jquery/1.11.1/jquery.js"></script>
+<!--<script src="./jquery-2.2.3.min%20.js"></script>-->
+<script>
+    $(document).ready(function () {
+        $("#search").click(function () {
+            $.ajax({
+                type: "get",
+                url: "/search/?userName=" + $("#keyword").val(),
+                dataType: "json",
+                success: function (data) {
+                    if (data.success) {
+                        $("#searchResult").html(data.msg);
+                    } else {
+                        $("#searchResult").html("出现错误：" + data.msg);
+                    }
+                },
+                error: function (jqXHR) {
+                    alert("发生错误：" + jqXHR.status);
+                }
+            });
+        });
+
+
+        $("#save").click(function () {
+            $.ajax({
+                url: "./create",
+                type: "post",
+                data: {
+                    name: $("#staffName").val(),
+                    number: $("#staffNumber").val(),
+                    sex: $("#staffSex").val(),
+                    job: $("#staffJob").val()
+                },
+                dataType: "json",
+                success: function (data) {
+                    if (data.success) {
+                        $("#createResult").html(data.msg);
+                    } else {
+                        $("#createResult").html("出现错误：" + data.msg);
+                    }
+                },
+                error: function (jqXHR) {
+                    alert("发生错误：" + jqXHR.status);
+                }
+            });
+        });
+    });
+</script>
+</body>
+</html>
+
+
+
+<!-- 总结
+1. get(带参数)路由的设置 ：　路由和参数之间还需要有一个斜杠"/" ,然后在加上"?"  ,再加上参数　键值对
+　　　　　　　ｕrl: "/search/?userName=" + $("#keyword").val(),
+     (但是PHP中不需要嘉善这个斜杠:ｕrl: "/search?userName=" + $("#keyword").val())
+     (如果路由是完整的路由: url: "http://127.0.0.1:8080/ajaxdemo/serverjson2.php?number=" + $("#keyword").val(),导致前端无法接收到后台相应的数据)
+   post
+２．success方法和.done 方法等效
+3.在浏览器中输入:localhost:3000/该html文件名 (前提是后台文件中:设置监听端口号那里已经引入了该文件)
+   localhost:3000/practice.html
+  (而不是愚蠢的在浏览器中打开该文件)
+
+-->
